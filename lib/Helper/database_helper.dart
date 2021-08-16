@@ -50,16 +50,14 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> result = await db.query(taskTable);
     return result;
   }
-
-  Future<List<Task>> getTaskList() async {
-    final List<Map<String, dynamic>> taskMapList = await getTaskMapList();
-    final List<Task> taskList = [];
-    taskMapList.forEach((taskMap) {
-      taskList.add(Task.fromMap(taskMap));
-    });
-    taskList.sort((taskA, taskB) => taskA.date.compareTo(taskB.date));
-    return taskList;
+  Future<List<Map<String, dynamic>>> fillTaskMapList(DateTime date) async {
+    Database db = await this.db;
+    final List<Map<String, dynamic>> result = await db.query(taskTable,where: '$colDate = ?',whereArgs: [date]);
+    return result;
   }
+
+
+
 
   Future<int> insertTask(Task task) async {
     Database db = await this.db;
@@ -79,5 +77,24 @@ class DatabaseHelper {
     final int result =
     await db.delete(taskTable, where: '$colId = ?', whereArgs: [id]);
     return result;
+  }
+  Future<List<Task>> fillTaskList(DateTime date) async {
+    final List<Map<String, dynamic>> taskMapList = await fillTaskMapList(date);
+    final List<Task> taskList = [];
+    taskMapList.forEach((taskMap) {
+      taskList.add(Task.fromMap(taskMap));
+    });
+    taskList.sort((taskA, taskB) => taskA.date.compareTo(taskB.date));
+    return taskList;
+  }
+
+  Future<List<Task>> getTaskList() async {
+    final List<Map<String, dynamic>> taskMapList = await getTaskMapList();
+    final List<Task> taskList = [];
+    taskMapList.forEach((taskMap) {
+      taskList.add(Task.fromMap(taskMap));
+    });
+    taskList.sort((taskA, taskB) => taskA.date.compareTo(taskB.date));
+    return taskList;
   }
 }

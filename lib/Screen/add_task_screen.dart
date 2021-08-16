@@ -106,7 +106,6 @@ class _AddTaskSreenState extends State<AddTaskSreen> {
   _submit() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print('$_title $_date $_priority');
 
       //insert the task to our user's database
       Task task = Task(title: _title, date: _date, priority: _priority);

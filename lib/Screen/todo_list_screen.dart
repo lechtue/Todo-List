@@ -5,7 +5,6 @@ import 'package:flutter_app/Model/task_model.dart';
 import 'package:flutter_app/Screen/add_task_screen.dart';
 import 'package:intl/intl.dart';
 
-
 class TodoListScreeen extends StatefulWidget {
   @override
   _TodoListScreeenState createState() => _TodoListScreeenState();
@@ -15,11 +14,17 @@ class _TodoListScreeenState extends State<TodoListScreeen> {
   Future<List<Task>> _taskList;
   final DateFormat _dateFormat = DateFormat('HH:mm , MMM dd,yyyy');
   final DateFormat _datePick = DateFormat('MMM dd,yyyy');
-
+  DateTime _date = DateTime.now();
   @override
   void initState() {
     super.initState();
     _updateTaskList();
+  }
+
+  _fillTask(DateTime dt) {
+    setState(() {
+      _taskList = DatabaseHelper.instance.fillTaskList(dt);
+    });
   }
 
   _updateTaskList() {
@@ -27,7 +32,7 @@ class _TodoListScreeenState extends State<TodoListScreeen> {
       _taskList = DatabaseHelper.instance.getTaskList();
     });
   }
-  DateTime _date = DateTime.now();
+
   TextEditingController _dateController = TextEditingController();
   _handleDatePicker() async {
     final DateTime date = await showDatePicker(
@@ -76,9 +81,9 @@ class _TodoListScreeenState extends State<TodoListScreeen> {
                 context,
                 CupertinoPageRoute(
                     builder: (_) => AddTaskSreen(
-                      task: task,
-                      updateTaskList: _updateTaskList,
-                    ))),
+                          task: task,
+                          updateTaskList: _updateTaskList,
+                        ))),
           ),
           Divider()
         ],
@@ -96,8 +101,8 @@ class _TodoListScreeenState extends State<TodoListScreeen> {
               context,
               CupertinoPageRoute(
                   builder: (_) => AddTaskSreen(
-                    updateTaskList: _updateTaskList,
-                  )));
+                        updateTaskList: _updateTaskList,
+                      )));
         },
         child: Icon(Icons.add),
       ),
@@ -159,6 +164,10 @@ class _TodoListScreeenState extends State<TodoListScreeen> {
                             validator: (input) => input.trim().isEmpty
                                 ? "Please enter a task"
                                 : null,
+                            onChanged: (dt) {
+                              _date = DateTime.parse(dt);
+                              _fillTask(_date);
+                            },
                           ),
                         ),
                       ],
